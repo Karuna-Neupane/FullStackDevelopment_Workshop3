@@ -2,13 +2,21 @@ const movieListDiv = document.getElementById('movie-list');
 const searchInput = document.getElementById('search-input');
 const form = document.getElementById('add-movie-form');
 
-let allMovies = JSON.parse(localStorage.getItem('movies')) || []; // Load from localStorage
+// Load from localStorage or initialize with sample movies
+let allMovies = JSON.parse(localStorage.getItem('movies')) || [
+    { id: '1', title: 'Inception', genre: 'Sci-Fi', year: 2010 },
+    { id: '2', title: 'Pulp Fiction', genre: 'Crime', year: 1994 },
+    { id: '3', title: 'Dune', genre: 'Sci-Fi', year: 2021 },
+    { id: '4', title: 'KGF', genre: 'Action/Thriller', year: 2018 }
+];
 
-// Render movies to the HTML
+// Save to localStorage
+localStorage.setItem('movies', JSON.stringify(allMovies));
+
 function renderMovies(moviesToDisplay) {
     movieListDiv.innerHTML = '';
     if (moviesToDisplay.length === 0) {
-        movieListDiv.innerHTML = '<p>No movies found matching your criteria.</p>';
+        movieListDiv.innerHTML = '<p>No movies found.</p>';
         return;
     }
 
@@ -25,39 +33,37 @@ function renderMovies(moviesToDisplay) {
 
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            const title = btn.dataset.title;
-            const year = btn.dataset.year;
-            const genre = btn.dataset.genre;
-            editMoviePrompt(id, title, year, genre);
+            editMoviePrompt(
+                btn.dataset.id,
+                btn.dataset.title,
+                btn.dataset.year,
+                btn.dataset.genre
+            );
         });
     });
 
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            deleteMovie(id);
-        });
+        btn.addEventListener('click', () => deleteMovie(btn.dataset.id));
     });
 }
 
 // Initial render
 renderMovies(allMovies);
 
-// Search functionality
-searchInput.addEventListener('input', function() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const filteredMovies = allMovies.filter(movie => {
-        return movie.title.toLowerCase().includes(searchTerm) || movie.genre.toLowerCase().includes(searchTerm);
-    });
-    renderMovies(filteredMovies);
+// Search
+searchInput.addEventListener('input', () => {
+    const term = searchInput.value.toLowerCase();
+    const filtered = allMovies.filter(
+        m => m.title.toLowerCase().includes(term) || m.genre.toLowerCase().includes(term)
+    );
+    renderMovies(filtered);
 });
 
 // Add new movie
-form.addEventListener('submit', function(event) {
-    event.preventDefault();
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
     const newMovie = {
-        id: Date.now().toString(), // unique ID as string
+        id: Date.now().toString(),
         title: document.getElementById('title').value,
         genre: document.getElementById('genre').value,
         year: parseInt(document.getElementById('year').value)
@@ -68,25 +74,25 @@ form.addEventListener('submit', function(event) {
     renderMovies(allMovies);
 });
 
-// Edit movie
+// Edit
 function editMoviePrompt(id, currentTitle, currentYear, currentGenre) {
-    const newTitle = prompt('Enter new Title:', currentTitle);
-    const newYearStr = prompt('Enter new Year:', currentYear);
-    const newGenre = prompt('Enter new Genre:', currentGenre);
+    const newTitle = prompt('New Title:', currentTitle);
+    const newYearStr = prompt('New Year:', currentYear);
+    const newGenre = prompt('New Genre:', currentGenre);
 
-    if (newTitle && newYearStr && newGenre) {
-        const index = allMovies.findIndex(m => m.id === id);
-        if (index !== -1) {
-            allMovies[index] = { id, title: newTitle, year: parseInt(newYearStr), genre: newGenre };
-            localStorage.setItem('movies', JSON.stringify(allMovies));
-            renderMovies(allMovies);
-        }
+    if (!newTitle || !newYearStr || !newGenre) return;
+
+    const index = allMovies.findIndex(m => m.id === id);
+    if (index !== -1) {
+        allMovies[index] = { id, title: newTitle, year: parseInt(newYearStr), genre: newGenre };
+        localStorage.setItem('movies', JSON.stringify(allMovies));
+        renderMovies(allMovies);
     }
 }
 
-// Delete movie
+// Delete
 function deleteMovie(id) {
-    if (!confirm("Are you sure you want to delete this movie?")) return;
+    if (!confirm('Are you sure you want to delete this movie?')) return;
     allMovies = allMovies.filter(m => m.id !== id);
     localStorage.setItem('movies', JSON.stringify(allMovies));
     renderMovies(allMovies);
