@@ -1,0 +1,28 @@
+{
+  "movies": [
+    {
+      "title": "Inception",
+      "year": 2010,
+      "genre": "Sci-Fi",
+      "id": "1"
+    },
+    {
+      "title": "Pulp Fiction",
+      "year": 1994,
+      "genre": "Crime",
+      "id": "2"
+    },
+    {
+      "title": "Dune",
+      "year": 2021,
+      "genre": "Sci-Fi",
+      "id": "3"
+    },
+    {
+      "title": "Interstellar",
+      "year": 2014,
+      "genre": "Sci-Fi",
+      "id": "8654"
+    }
+  ]
+}
